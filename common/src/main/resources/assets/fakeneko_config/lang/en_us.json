@@ -1,6 +1,8 @@
 {
-  "config.fakeneko_config.title": "FakeNeko Config",
+  "config.fakeneko_config.title": "Fakeneko Config",
   "config.fakeneko_config.search": "Search...",
+  "config.fakeneko_config.cancel": "Cancel",
+  "config.fakeneko_config.done": "Done",
   "config.fakeneko_config.save": "Save",
   "config.fakeneko_config.reset": "Reset",
   "config.fakeneko_config.reset_single": "Reset",
@@ -13,9 +15,10 @@
   "config.fakeneko_config.max_count": "Max Count",
   "config.fakeneko_config.speed": "Speed",
   "config.fakeneko_config.mode": "Mode",
+  "config.fakeneko_config.prefix": "Prefix",
   "config.fakeneko_config.blacklist": "Blacklist",
   "config.fakeneko_config.toggle_hotkey": "Toggle Hotkey",
   "config.fakeneko_config.hotkey.title": "Set Hotkey",
-  "config.fakeneko_config.hotkey.press": "Press any key...",
-  "config.fakeneko_config.clear": "Clear"
+  "config.fakeneko_config.hotkey.press": "Click the key above to record",
+  "config.fakeneko_config.open": "Open Config"
 }

@@ -18,15 +18,14 @@ public class HotkeyScreen extends Screen {
 	private static final Component PRESS = Component.translatable("config.fakeneko_config.hotkey.press");
 	private static final Component RESET = Component.translatable("config.fakeneko_config.reset_single");
 	private static final Component DONE = Component.translatable("gui.done");
-	private static final Component CLEAR = Component.translatable("config.fakeneko_config.clear");
 
 	private final ConfigScreen lastScreen;
 	private final HotkeyConfig config;
 	private Button keyButton;
 	private Button resetButton;
 	private Button doneButton;
-	private Button clearButton;
 	private final List<InputConstants.Key> recording = new ArrayList<>();
+	private boolean recordingState;
 
 	public HotkeyScreen(ConfigScreen lastScreen, HotkeyConfig config) {
 		super(TITLE);
@@ -42,16 +41,8 @@ public class HotkeyScreen extends Screen {
 			button -> {}
 		).bounds(this.width / 2 - 75, this.height / 2 - 30, 150, 20).build());
 
-		this.clearButton = this.addRenderableWidget(Button.builder(CLEAR, button -> {
-			this.recording.clear();
-			this.updateKeyButton();
-		}).bounds(this.width / 2 - 155, this.height / 2 + 10, 150, 20).build());
-
-		this.resetButton = this.addRenderableWidget(Button.builder(RESET, button -> {
-			this.recording.clear();
-			this.recording.addAll(this.config.defaultValue());
-			this.updateKeyButton();
-		}).bounds(this.width / 2 + 5, this.height / 2 + 10, 150, 20).build());
+		this.resetButton = this.addRenderableWidget(Button.builder(RESET, button -> this.onReset())
+			.bounds(this.width / 2 - 75, this.height / 2 + 10, 150, 20).build());
 
 		this.doneButton = this.addRenderableWidget(Button.builder(DONE, button -> this.onClose())
 			.bounds(this.width / 2 - 75, this.height / 2 + 40, 150, 20).build());
@@ -66,25 +57,48 @@ public class HotkeyScreen extends Screen {
 			this.onClose();
 			return true;
 		}
-		InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(event.key());
-		this.recordKey(key);
+		if (this.recordingState) {
+			InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(event.key());
+			this.recordKey(key);
+		}
 		return true;
 	}
 
 	@Override
 	public boolean mouseClicked(net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick) {
-		if (this.doneButton.isMouseOver(event.x(), event.y()) || this.resetButton.isMouseOver(event.x(), event.y()) || this.clearButton.isMouseOver(event.x(), event.y())) {
+		if (this.doneButton.isMouseOver(event.x(), event.y()) || this.resetButton.isMouseOver(event.x(), event.y())) {
 			return super.mouseClicked(event, doubleClick);
 		}
-		InputConstants.Key key = InputConstants.Type.MOUSE.getOrCreate(event.button());
-		this.recordKey(key);
+		if (this.keyButton.isMouseOver(event.x(), event.y())) {
+			if (this.recordingState) {
+				this.recordKey(InputConstants.Type.MOUSE.getOrCreate(event.button()));
+			} else {
+				this.startRecording();
+			}
+			return super.mouseClicked(event, doubleClick);
+		}
+		// Clicked outside: stop recording but stay on this screen.
+		this.recordingState = false;
 		return true;
+	}
+
+	private void startRecording() {
+		this.recordingState = true;
+		this.recording.clear();
+		this.updateKeyButton();
 	}
 
 	private void recordKey(InputConstants.Key key) {
 		if (!this.recording.contains(key)) {
 			this.recording.add(key);
 		}
+		this.updateKeyButton();
+	}
+
+	private void onReset() {
+		this.recordingState = false;
+		this.recording.clear();
+		this.recording.addAll(this.config.defaultValue());
 		this.updateKeyButton();
 	}
 
@@ -98,8 +112,8 @@ public class HotkeyScreen extends Screen {
 
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-		graphics.text(Minecraft.getInstance().font, this.title, this.width / 2 - this.font.width(this.title) / 2, 20, 0xFFFFFF);
-		graphics.text(Minecraft.getInstance().font, PRESS, this.width / 2 - this.font.width(PRESS) / 2, this.height / 2 - 55, 0xAAAAAA);
+		graphics.text(Minecraft.getInstance().font, this.title, this.width / 2 - this.font.width(this.title) / 2, 20, -1);
+		graphics.text(Minecraft.getInstance().font, PRESS, this.width / 2 - this.font.width(PRESS) / 2, this.height / 2 - 55, 0xFFAAAAAA);
 		for (GuiEventListener child : this.children()) {
 			if (child instanceof net.minecraft.client.gui.components.Renderable renderable) {
 				renderable.extractRenderState(graphics, mouseX, mouseY, a);

@@ -68,6 +68,10 @@ public class ConfigEntry extends ConfigList.Entry {
 					protected void updateMessage() {
 						this.setMessage(Component.literal(String.valueOf(integerConfig.get())));
 					}
+
+					{
+						this.updateMessage();
+					}
 				};
 				this.children.add(slider);
 			}
@@ -83,6 +87,10 @@ public class ConfigEntry extends ConfigList.Entry {
 					@Override
 					protected void updateMessage() {
 						this.setMessage(Component.literal(String.format("%.2f", doubleConfig.get())));
+					}
+
+					{
+						this.updateMessage();
 					}
 				};
 				this.children.add(slider);
@@ -138,29 +146,33 @@ public class ConfigEntry extends ConfigList.Entry {
 
 	@Override
 	public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
-		graphics.text(Minecraft.getInstance().font, this.config.displayName(), this.getX() + 5, this.getY() + 6, -1);
+		graphics.text(Minecraft.getInstance().font, this.config.displayName(), this.getX() + 10, this.getY() + 6, -1);
 		boolean hasHotkey = this.config instanceof BooleanConfig bc && bc.hotkey() != null;
-		int rightWidth = hasHotkey ? 180 : 160;
-		int widgetX = this.getX() + this.getWidth() - rightWidth;
-		this.resetButton.setX(widgetX + rightWidth - 40);
+		int rightEdge = this.getX() + this.getWidth() - 10;
+		this.resetButton.setX(rightEdge - 40);
 		this.resetButton.setY(this.getY() + 2);
 		this.resetButton.extractRenderState(graphics, mouseX, mouseY, a);
 		if (hasHotkey) {
+			int mainWidth = 70;
+			int hotkeyWidth = 60;
+			int mainX = rightEdge - 40 - 5 - mainWidth;
+			int hotkeyX = mainX - 5 - hotkeyWidth;
 			Button mainButton = (Button) this.children.get(1);
-			mainButton.setX(widgetX);
+			mainButton.setX(mainX);
 			mainButton.setY(this.getY() + 2);
-			mainButton.setWidth(70);
+			mainButton.setWidth(mainWidth);
 			mainButton.extractRenderState(graphics, mouseX, mouseY, a);
 			Button hotkeyButton = (Button) this.children.get(2);
-			hotkeyButton.setX(widgetX + 75);
+			hotkeyButton.setX(hotkeyX);
 			hotkeyButton.setY(this.getY() + 2);
-			hotkeyButton.setWidth(60);
+			hotkeyButton.setWidth(hotkeyWidth);
 			hotkeyButton.extractRenderState(graphics, mouseX, mouseY, a);
 		} else {
 			for (int i = 1; i < this.children.size(); i++) {
 				GuiEventListener child = this.children.get(i);
 				if (child instanceof net.minecraft.client.gui.components.AbstractWidget widget) {
-					widget.setX(widgetX);
+					int widgetWidth = widget.getWidth();
+					widget.setX(rightEdge - 40 - 5 - widgetWidth);
 					widget.setY(this.getY() + 2);
 					widget.extractRenderState(graphics, mouseX, mouseY, a);
 				}

@@ -18,6 +18,7 @@ public class ConfigList extends ContainerObjectSelectionList<ConfigList.Entry> {
 	private final ConfigScreen screen;
 	private final List<Entry> allEntries = new ArrayList<>();
 	private String filter = "";
+	private double currentScroll;
 
 	public ConfigList(ConfigScreen screen, Minecraft minecraft, int width, int height, int y, int itemHeight) {
 		super(minecraft, width, height, y, itemHeight);
@@ -55,6 +56,12 @@ public class ConfigList extends ContainerObjectSelectionList<ConfigList.Entry> {
 	@Override
 	protected int scrollBarX() {
 		return this.getRight() - 6;
+	}
+
+	@Override
+	public void setScrollAmount(double amount) {
+		super.setScrollAmount(amount);
+		this.screen.setScrollAmount(amount);
 	}
 
 	public abstract static class Entry extends ContainerObjectSelectionList.Entry<Entry> {

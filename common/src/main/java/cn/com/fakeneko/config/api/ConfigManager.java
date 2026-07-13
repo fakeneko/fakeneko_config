@@ -42,6 +42,14 @@ public interface ConfigManager {
 	Collection<ConfigCategory> categories();
 
 	/**
+	 * The display name used for the config screen title.
+	 *
+	 * @return The display name.
+	 */
+	@NotNull
+	net.minecraft.network.chat.Component displayName();
+
+	/**
 	 * Loads all configuration values from disk.
 	 */
 	void load();
@@ -60,5 +68,21 @@ public interface ConfigManager {
 				config.reset();
 			}
 		}
+	}
+
+	/**
+	 * Whether any config has been modified from its default value.
+	 *
+	 * @return True if at least one config is modified.
+	 */
+	default boolean isModified() {
+		for (ConfigCategory category : this.categories()) {
+			for (Config<?> config : category.configs()) {
+				if (config.isModified()) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

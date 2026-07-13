@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.Locale;
 import java.util.stream.IntStream;
 
 /**
@@ -94,14 +95,26 @@ public class InputKeys extends AbstractCollection<InputConstants.Key> {
 			return true;
 		}
 		if (o instanceof InputKeys other) {
-			return Objects.equals(this.keys, other.keys);
+			if (this.keys.size() != other.keys.size()) {
+				return false;
+			}
+			for (int i = 0; i < this.keys.size(); i++) {
+				if (!this.keys.get(i).getName().equals(other.keys.get(i).getName())) {
+					return false;
+				}
+			}
+			return true;
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(this.keys);
+		int result = 1;
+		for (InputConstants.Key key : this.keys) {
+			result = 31 * result + key.getName().hashCode();
+		}
+		return result;
 	}
 
 	@Override
@@ -109,7 +122,29 @@ public class InputKeys extends AbstractCollection<InputConstants.Key> {
 		if (this.keys.isEmpty()) {
 			return InputConstants.UNKNOWN.getName();
 		}
-		return String.join(SEPARATOR_STR, this.keys.stream().map(InputConstants.Key::getName).toList());
+		return String.join(SEPARATOR_STR, this.keys.stream().map(InputKeys::toShortName).toList());
+	}
+
+	private static String toShortName(InputConstants.Key key) {
+		String name = key.getName();
+		if (name.startsWith("key.mouse.")) {
+			int index = switch (name.substring("key.mouse.".length())) {
+				case "left" -> 1;
+				case "right" -> 2;
+				case "middle" -> 3;
+				case "4" -> 4;
+				case "5" -> 5;
+				case "6" -> 6;
+				case "7" -> 7;
+				case "8" -> 8;
+				default -> throw new IllegalArgumentException("Unknown mouse key: " + name);
+			};
+			return "M" + index;
+		}
+		if (name.startsWith("key.keyboard.")) {
+			return name.substring("key.keyboard.".length()).toUpperCase(Locale.ROOT);
+		}
+		return name;
 	}
 
 	public static InputKeys fromString(String value) {
@@ -119,9 +154,28 @@ public class InputKeys extends AbstractCollection<InputConstants.Key> {
 		String[] parts = value.split("\\+");
 		List<InputConstants.Key> keys = new ArrayList<>(parts.length);
 		for (String part : parts) {
-			keys.add(InputConstants.getKey(part.trim()));
+			keys.add(fromShortName(part.trim()));
 		}
 		return new InputKeys(keys);
+	}
+
+	private static InputConstants.Key fromShortName(String shortName) {
+		if (shortName.length() >= 2 && shortName.charAt(0) == 'M') {
+			try {
+				int index = Integer.parseInt(shortName.substring(1));
+				if (index >= 1 && index <= 8) {
+					String name = switch (index) {
+						case 1 -> "key.mouse.left";
+						case 2 -> "key.mouse.right";
+						case 3 -> "key.mouse.middle";
+						default -> "key.mouse." + index;
+					};
+					return InputConstants.getKey(name);
+				}
+			} catch (NumberFormatException ignored) {
+			}
+		}
+		return InputConstants.getKey("key.keyboard." + shortName.toLowerCase(Locale.ROOT));
 	}
 
 	public static class Serializer implements JsonSerializer<InputKeys>, JsonDeserializer<InputKeys> {

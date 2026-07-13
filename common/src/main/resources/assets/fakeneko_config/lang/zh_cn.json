@@ -1,6 +1,8 @@
 {
-  "config.fakeneko_config.title": "FakeNeko 配置",
+  "config.fakeneko_config.title": "Fakeneko Config",
   "config.fakeneko_config.search": "搜索...",
+  "config.fakeneko_config.cancel": "取消",
+  "config.fakeneko_config.done": "完成",
   "config.fakeneko_config.save": "保存",
   "config.fakeneko_config.reset": "重置",
   "config.fakeneko_config.reset_single": "重置",
@@ -13,9 +15,10 @@
   "config.fakeneko_config.max_count": "最大数量",
   "config.fakeneko_config.speed": "速度",
   "config.fakeneko_config.mode": "模式",
+  "config.fakeneko_config.prefix": "前缀",
   "config.fakeneko_config.blacklist": "黑名单",
   "config.fakeneko_config.toggle_hotkey": "切换热键",
   "config.fakeneko_config.hotkey.title": "设置热键",
-  "config.fakeneko_config.hotkey.press": "按下任意按键...",
-  "config.fakeneko_config.clear": "清空"
+  "config.fakeneko_config.hotkey.press": "点击上方按键开始录制",
+  "config.fakeneko_config.open": "打开配置"
 }

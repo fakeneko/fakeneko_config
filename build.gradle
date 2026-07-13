@@ -4,6 +4,10 @@ plugins {
     id 'base'
 }
 
+repositories {
+    maven { url = 'https://maven.terraformersmc.com/' }
+}
+
 dependencies {
     // implementation(project(path: ':common', configuration: 'default'))
     // implementation(project(path: ':fabric', configuration: 'default'))

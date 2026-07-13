@@ -77,6 +77,26 @@ public class ConfigSerializationTest {
 		manager2.load();
 
 		assertEquals(newCombo, hotkey2.get(), "Loaded combo should be Shift+M");
+		assertTrue(manager2.isModified(), "Manager should be modified after loading changed value");
+
+		Files.deleteIfExists(configPath);
+		Files.deleteIfExists(tempDir);
+	}
+
+	@Test
+	public void testIsModifiedDefaultState() throws Exception {
+		Path tempDir = Files.createTempDirectory("fakeneko_config-test");
+		Path configPath = tempDir.resolve("default.json");
+		ConfigManagerImpl manager = new ConfigManagerImpl("default", configPath);
+		ConfigCategory category = manager.createCategory("general", Component.literal("General"));
+
+		new BooleanConfig("enabled", category, true);
+		new IntegerConfig("max_count", category, 5, 1, 20);
+		new StringListConfig("blacklist", category, List.of("a", "b"));
+		new HotkeyConfig("combo", category, InputKeys.ofKeys(InputConstants.KEY_LCONTROL, InputConstants.KEY_K), Identifier.fromNamespaceAndPath("test", "combo"));
+
+		manager.load();
+		assertFalse(manager.isModified(), "Manager should not be modified after loading defaults");
 
 		Files.deleteIfExists(configPath);
 		Files.deleteIfExists(tempDir);

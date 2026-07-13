@@ -87,9 +87,13 @@ dependencies {
 ```java
 import cn.com.fakeneko.config.api.ConfigManager;
 import cn.com.fakeneko.config.impl.ConfigManagerImpl;
+import net.minecraft.network.chat.Component;
 
 public class MyConfig {
-    public static final ConfigManager MANAGER = new ConfigManagerImpl("my_mod_id");
+    public static final ConfigManager MANAGER = new ConfigManagerImpl(
+        "my_mod_id",
+        Component.translatable("config.my_mod_id.title")  // 配置界面标题，可在语言文件中翻译
+    );
 
     static {
         MANAGER.load();
@@ -101,7 +105,22 @@ public class MyConfig {
 }
 ```
 
-`ConfigManagerImpl` 默认将配置文件保存为 `config/my_mod_id.json`。
+`ConfigManagerImpl` 默认将配置文件保存为 `config/my_mod_id.json`。`ConfigScreen` 的标题会显示为传入的 `displayName`。
+
+标题既可以使用 `Component.translatable` 在语言文件中翻译，也可以直接写死：
+
+```java
+new ConfigManagerImpl(
+    "my_mod_id",
+    Component.literal("My Mod Config")  // 固定文字
+);
+```
+
+如果不传入 `displayName`，则默认使用翻译键 `config.my_mod_id.title`：
+
+```java
+public static final ConfigManager MANAGER = new ConfigManagerImpl("my_mod_id");
+```
 
 > 请确保你的 modId 符合 NeoForge 规范，例如使用 `my_mod_id` 而不是 `my-mod-id`。
 
@@ -114,7 +133,10 @@ import cn.com.fakeneko.config.impl.types.IntegerConfig;
 import net.minecraft.network.chat.Component;
 
 public class MyConfig {
-    public static final ConfigManager MANAGER = new ConfigManagerImpl("my_mod_id");
+    public static final ConfigManager MANAGER = new ConfigManagerImpl(
+        "my_mod_id",
+        Component.translatable("config.my_mod_id.title")
+    );
 
     public static final ConfigCategory GENERAL = MANAGER.createCategory(
         "general",
@@ -280,11 +302,13 @@ InputKeys mixed = InputKeys.ofAll(
 
 在 `ConfigScreen` 中点击热键配置项按钮，进入热键编辑界面：
 
-- 依次按下要组合的所有键（例如先按住 Ctrl 再按 K）。
-- 鼠标按键也会被记录（例如 Ctrl + 鼠标中键）。
-- 点击 `Clear`（`清空`）清空组合键。
+- 点击上方的按键绑定区域，开始重新录制新的组合键。
+- 录制过程中，依次按下要组合的所有键（例如先按住 Ctrl 再按 K）。
+- 鼠标按键也会被记录（例如 Ctrl + 鼠标左键）。
+- 点击上方按键绑定区域，可记录当前鼠标按键（如左键）。
+- 点击外部空白处会停止录制，但保持在热键编辑界面。
 - 点击 `Reset`（`重置`）恢复默认值。
-- 按 `Enter` 或点击 `Done`（`完成`）保存。
+- 按 `Enter` 或点击 `Done`（`完成`）保存并返回。
 - 按 `Escape` 取消并返回。
 
 ## 变更监听
@@ -318,12 +342,13 @@ public static void openConfig(Screen parent) {
 
 ### 界面功能
 
+- 标题：使用 `ConfigManager.displayName()`，由各 mod 自己指定。
 - 搜索框：按配置项标识符（`name`）或**翻译后的显示名称**过滤，支持中英文搜索。
 - 分类标题：所有配置项按分类分组显示，分类名使用 `Component.translatable`。
 - 配置项左侧显示 `Config.displayName()`，支持 `Component.translatable` 翻译。
 - 各类型编辑控件：见 [支持类型](#支持类型)。
 - 每个配置项右侧有 `Reset`（`重置`）按钮恢复默认值。
-- 底部左侧为 `Reset`（`重置`）重置所有配置，右侧为 `Save`（`保存`）保存并退出。
+- 底部左侧为 `Cancel`（`取消`）直接返回，右侧为 `Done`（`完成`）保存并退出；`Done` 只有在配置发生修改时才能点击。
 
 ## 加载与保存
 

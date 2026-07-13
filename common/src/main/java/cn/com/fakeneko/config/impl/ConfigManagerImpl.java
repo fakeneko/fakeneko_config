@@ -27,15 +27,31 @@ public class ConfigManagerImpl implements ConfigManager {
 
 	private final String modId;
 	private final Path configPath;
+	private final net.minecraft.network.chat.Component displayName;
 	private final Map<String, ConfigCategory> categories = new LinkedHashMap<>();
 
-	public ConfigManagerImpl(@NotNull String modId, @NotNull Path configPath) {
+	public ConfigManagerImpl(@NotNull String modId, @NotNull Path configPath, @NotNull net.minecraft.network.chat.Component displayName) {
 		this.modId = modId;
 		this.configPath = configPath;
+		this.displayName = displayName;
+	}
+
+	public ConfigManagerImpl(@NotNull String modId, @NotNull net.minecraft.network.chat.Component displayName) {
+		this(modId, Path.of("config").resolve(modId + ".json"), displayName);
+	}
+
+	public ConfigManagerImpl(@NotNull String modId, @NotNull Path configPath) {
+		this(modId, configPath, net.minecraft.network.chat.Component.translatable("config." + modId + ".title"));
 	}
 
 	public ConfigManagerImpl(@NotNull String modId) {
-		this(modId, Path.of("config").resolve(modId + ".json"));
+		this(modId, Path.of("config").resolve(modId + ".json"), net.minecraft.network.chat.Component.translatable("config." + modId + ".title"));
+	}
+
+	@Override
+	@NotNull
+	public net.minecraft.network.chat.Component displayName() {
+		return this.displayName;
 	}
 
 	@Override
