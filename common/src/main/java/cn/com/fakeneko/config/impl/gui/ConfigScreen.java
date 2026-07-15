@@ -3,6 +3,7 @@ package cn.com.fakeneko.config.impl.gui;
 import cn.com.fakeneko.config.api.Config;
 import cn.com.fakeneko.config.api.ConfigCategory;
 import cn.com.fakeneko.config.api.ConfigManager;
+import cn.com.fakeneko.config.impl.types.BooleanConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -18,6 +19,7 @@ public class ConfigScreen extends Screen {
 
 	private final Screen lastScreen;
 	private final ConfigManager manager;
+	private final java.util.Map<Config<?>, Object> initialValues = new java.util.IdentityHashMap<>();
 	private ConfigList configList;
 	private EditBox searchBox;
 	private Button cancelButton;
@@ -55,10 +57,19 @@ public class ConfigScreen extends Screen {
 
 		for (ConfigCategory category : this.manager.categories()) {
 			for (Config<?> config : category.configs()) {
+				this.captureInitialValue(config);
 				this.addModificationListener(config);
+				if (config instanceof BooleanConfig booleanConfig && booleanConfig.hotkey() != null) {
+					this.captureInitialValue(booleanConfig.hotkey());
+					this.addModificationListener(booleanConfig.hotkey());
+				}
 			}
 		}
 		this.updateDoneButton();
+	}
+
+	private void captureInitialValue(Config<?> config) {
+		this.initialValues.put(config, config.get());
 	}
 
 	private <T> void addModificationListener(Config<T> config) {
@@ -95,7 +106,35 @@ public class ConfigScreen extends Screen {
 		this.minecraft.gui.setScreen(this.lastScreen);
 	}
 
+	public boolean isModifiedFromInitial(Config<?> config) {
+		Object initial = this.initialValues.get(config);
+		if (initial == null) {
+			return config.isModified();
+		}
+		Object current = config.get();
+		if (current instanceof java.util.List<?> list && initial instanceof java.util.List<?> initialList) {
+			return !list.equals(initialList);
+		}
+		return !initial.equals(current);
+	}
+
+	public boolean isModifiedFromInitial() {
+		for (ConfigCategory category : this.manager.categories()) {
+			for (Config<?> config : category.configs()) {
+				if (this.isModifiedFromInitial(config)) {
+					return true;
+				}
+				if (config instanceof BooleanConfig booleanConfig && booleanConfig.hotkey() != null) {
+					if (this.isModifiedFromInitial(booleanConfig.hotkey())) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	private void updateDoneButton() {
-		this.doneButton.active = this.manager.isModified();
+		this.doneButton.active = this.isModifiedFromInitial();
 	}
 }

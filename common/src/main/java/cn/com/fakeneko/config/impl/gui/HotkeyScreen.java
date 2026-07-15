@@ -43,6 +43,7 @@ public class HotkeyScreen extends Screen {
 
 		this.resetButton = this.addRenderableWidget(Button.builder(RESET, button -> this.onReset())
 			.bounds(this.width / 2 - 75, this.height / 2 + 10, 150, 20).build());
+		this.updateResetButton();
 
 		this.doneButton = this.addRenderableWidget(Button.builder(DONE, button -> this.onClose())
 			.bounds(this.width / 2 - 75, this.height / 2 + 40, 150, 20).build());
@@ -106,8 +107,13 @@ public class HotkeyScreen extends Screen {
 		return this.recording.isEmpty() ? PRESS : InputKeys.format(this.recording);
 	}
 
+	private void updateResetButton() {
+		this.resetButton.active = !new InputKeys(this.recording).equals(this.config.defaultValue());
+	}
+
 	private void updateKeyButton() {
 		this.keyButton.setMessage(this.formatRecording());
+		this.updateResetButton();
 	}
 
 	@Override

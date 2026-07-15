@@ -152,7 +152,10 @@ public class ConfigEntry extends ConfigList.Entry {
 	}
 
 	private Component booleanLabel(boolean value) {
-		return value ? Component.translatable("config.fakeneko_config.true") : Component.translatable("config.fakeneko_config.false");
+		net.minecraft.ChatFormatting color = value ? net.minecraft.ChatFormatting.GREEN : net.minecraft.ChatFormatting.RED;
+		return Component.translatable(value ? "config.fakeneko_config.true" : "config.fakeneko_config.false")
+			.copy()
+			.withStyle(color);
 	}
 
 	private void onReset() {
@@ -166,8 +169,26 @@ public class ConfigEntry extends ConfigList.Entry {
 		output.add(NarratedElementType.TITLE, Component.literal(this.config.name()));
 	}
 
+	private boolean isModified() {
+		if (this.config instanceof BooleanConfig booleanConfig && booleanConfig.hotkey() != null) {
+			return this.config.isModified() || booleanConfig.hotkey().isModified();
+		}
+		return this.config.isModified();
+	}
+
+	private boolean isModifiedFromInitial() {
+		if (this.config instanceof BooleanConfig booleanConfig && booleanConfig.hotkey() != null) {
+			return this.screen.isModifiedFromInitial(this.config) || this.screen.isModifiedFromInitial(booleanConfig.hotkey());
+		}
+		return this.screen.isModifiedFromInitial(this.config);
+	}
+
 	@Override
 	public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
+		if (this.isModifiedFromInitial()) {
+			graphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x33FFFF00);
+		}
+		this.resetButton.active = this.isModified();
 		graphics.text(Minecraft.getInstance().font, this.config.displayName(), this.getX() + 10, this.getY() + 6, -1);
 		boolean hasHotkey = this.config instanceof BooleanConfig bc && bc.hotkey() != null;
 		int rightEdge = this.getX() + this.getWidth() - 10;
