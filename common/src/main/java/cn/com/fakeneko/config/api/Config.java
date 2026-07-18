@@ -31,6 +31,17 @@ public interface Config<T> {
 	}
 
 	/**
+	 * The human-readable description of this config option, shown as a
+	 * tooltip when hovering the entry in the config GUI.
+	 *
+	 * @return The description, or {@code null} if this config has no description.
+	 */
+	@org.jetbrains.annotations.Nullable
+	default Component description() {
+		return null;
+	}
+
+	/**
 	 * Whether this config should be shown as a standalone row in the config GUI.
 	 * Internal / sub-configs can return false.
 	 *

@@ -55,7 +55,12 @@ public class TestConfig {
 	public enum RenderMode {
 		FAST,
 		FANCY,
-		FABULOUS
+		FABULOUS,
+		MINIMAL,
+		BALANCED,
+		CINEMATIC,
+		REALISTIC,
+		CUSTOM
 	}
 
 	public enum TooltipPosition {
@@ -66,6 +71,9 @@ public class TestConfig {
 	}
 
 	static {
+		ENABLED.withDescription(Component.translatable("config.fakeneko_config.enabled.desc"));
+		MAX_COUNT.withDescription(Component.translatable("config.fakeneko_config.max_count.desc"));
+		SPEED.withDescription(Component.translatable("config.fakeneko_config.speed.desc"));
 		MANAGER.load();
 	}
 

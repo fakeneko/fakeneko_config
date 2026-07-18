@@ -12,8 +12,10 @@ A lightweight, MaLiLib-like Minecraft configuration library for Fabric and NeoFo
 - Supports Boolean / Integer / Double / String / StringList / Hotkey / Enum config types
 - Automatic JSON serialization and deserialization
 - Automatic configuration GUI generation
-- Supports categories, default values, reset, and change callbacks
+- Supports categories (switchable via tabs), default values, reset, and change callbacks
+- Config entries support a description (shown as a tooltip on hover)
 - Supports combo-key hotkey binding
+- Built-in search and a discard confirmation when cancelling with unsaved changes
 
 ## Why fakeneko_config
 
@@ -249,6 +251,7 @@ BooleanConfig enabled = new BooleanConfig(
     Identifier.fromNamespaceAndPath("my_mod_id", "enabled"),
     InputKeys.of(InputConstants.KEY_H)
 );
+enabled.withDescription(Component.translatable("config.my_mod_id.enabled.desc")); // Tooltip shown on hover
 enabled.toggle();      // Toggle the boolean
 boolean value = enabled.get();
 enabled.set(false);  // Set directly
@@ -257,6 +260,8 @@ enabled.reset();       // Reset to default
 // The hotkey automatically calls enabled.toggle() when pressed
 // In the GUI, a hotkey button appears on the right of the boolean row.
 ```
+
+All config types support `withDescription(Component)` to set a description shown as a tooltip when hovering the entry; nothing is shown if unset. Since this method returns the base type, call it separately after declaration (as above) to keep the concrete subtype.
 
 ### IntegerConfig
 
@@ -347,7 +352,7 @@ EnumConfig<RenderMode> renderMode = new EnumConfig<>(
 renderMode.set(RenderMode.FAST);
 ```
 
-Enum value count is limited to 2~8.
+Enum value count is limited to 2~8. The dropdown menu (`DROPDOWN`) shows all options in a scrollable list, with the current value highlighted in aqua with a `✓` and greyed out.
 
 ### HotkeyConfig
 
@@ -443,15 +448,17 @@ public static void openConfig(Screen parent) {
 ### Screen Features
 
 - Title: uses `ConfigManager.displayName()`, each mod can provide its own.
-- Search box: filters by config identifier (`name`) or translated display name, supports Chinese and English.
-- Category headers: config entries are grouped by category, category names use `Component.translatable`.
+- Category tabs: multiple categories are switched via tabs at the top; the selected tab is highlighted (greyed). The tab row is hidden automatically when there is only one category.
+- Search box: filters by config identifier (`name`) or translated display name, supports Chinese and English. Search is **global across all categories**; while searching, all tabs are greyed out and disabled to indicate results are not limited to the current category.
+- Entry description: entries with a `description()` set show a tooltip on hover.
 - Left side shows `Config.displayName()`, supports `Component.translatable` translations.
 - Editor widgets for each type: see [Supported Types](#supported-types).
 - Each config entry has a `Reset` button on the right to restore the default value; disabled when already at default.
-- Modified config entries are highlighted with a translucent yellow background.
+- Modified config entries are highlighted with a translucent sky-blue background.
 - Boolean toggle buttons: green text for on, red text for off.
-- Supports Enum cycle buttons or dropdown menus.
-- Bottom-left is `Cancel` (return without saving), bottom-right is `Done` (save and exit); `Done` is only enabled when the config has been modified.
+- Supports Enum cycle buttons or dropdown menus (the dropdown is a scrollable list with the current value `✓`-highlighted).
+- Bottom-left is `Cancel`, bottom-right is `Done` (save and exit); `Done` is only enabled when the config has been modified.
+- Cancelling or pressing ESC with unsaved changes shows a confirmation (Discard Changes / Keep Editing) to avoid losing edits.
 
 ## Load & Save
 

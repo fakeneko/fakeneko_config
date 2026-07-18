@@ -15,6 +15,7 @@ public abstract class AbstractConfig<T> implements Config<T> {
 	private final ConfigCategory category;
 	private final T defaultValue;
 	private T value;
+	private Component description;
 	private final List<ConfigListener<T>> listeners = new ArrayList<>();
 
 	protected AbstractConfig(@NotNull String name, @NotNull ConfigCategory category, T defaultValue) {
@@ -40,6 +41,23 @@ public abstract class AbstractConfig<T> implements Config<T> {
 	@NotNull
 	public Component displayName() {
 		return this.displayName;
+	}
+
+	@Override
+	@org.jetbrains.annotations.Nullable
+	public Component description() {
+		return this.description;
+	}
+
+	/**
+	 * Sets the description shown as a tooltip for this config in the GUI.
+	 *
+	 * @param description The description component.
+	 * @return This config, for chaining.
+	 */
+	public AbstractConfig<T> withDescription(@NotNull Component description) {
+		this.description = description;
+		return this;
 	}
 
 	@Override

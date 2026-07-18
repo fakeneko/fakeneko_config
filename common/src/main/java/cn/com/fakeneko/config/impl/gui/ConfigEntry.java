@@ -284,10 +284,14 @@ public class ConfigEntry extends ConfigList.Entry {
 	@Override
 	public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
 		if (this.isModifiedFromInitial()) {
-			graphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x33FFFF00);
+			graphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x1A4488FF);
 		}
 		this.resetButton.active = this.isModified();
 		graphics.text(Minecraft.getInstance().font, this.config.displayName(), this.getX() + 10, this.getY() + 6, -1);
+		Component description = this.config.description();
+		if (hovered && description != null) {
+			graphics.setTooltipForNextFrame(description, mouseX, mouseY);
+		}
 		boolean hasHotkey = this.config instanceof BooleanConfig bc && bc.hotkey() != null;
 		int rightEdge = this.getX() + this.getWidth() - 10;
 		this.resetButton.setX(rightEdge - 40);

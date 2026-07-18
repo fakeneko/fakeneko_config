@@ -10,8 +10,10 @@
 - 支持 Boolean / Integer / Double / String / StringList / Hotkey / Enum 配置类型
 - 自动 JSON 序列化与反序列化
 - 自动生成配置 GUI
-- 支持分类、默认值、重置、变更回调
+- 支持分类（页签切换）、默认值、重置、变更回调
+- 配置项支持描述（悬停显示 tooltip 说明）
 - 支持组合键热键绑定
+- 配置 GUI 内置搜索、取消时未保存更改二次确认
 
 ## 为什么选择 fakeneko_config
 
@@ -245,6 +247,7 @@ BooleanConfig enabled = new BooleanConfig(
     Identifier.fromNamespaceAndPath("my_mod_id", "enabled"),
     InputKeys.of(InputConstants.KEY_H)
 );
+enabled.withDescription(Component.translatable("config.my_mod_id.enabled.desc")); // 悬停显示的描述
 enabled.toggle();      // 切换布尔值
 boolean value = enabled.get();
 enabled.set(false);  // 直接设置
@@ -253,6 +256,8 @@ enabled.reset();       // 恢复默认值
 // 热键按下时会自动调用 enabled.toggle()
 // 在 GUI 中，布尔条目右侧会出现一个热键按钮。
 ```
+
+所有配置类型都支持 `withDescription(Component)` 设置描述，鼠标悬停在配置项上时会以 tooltip 显示；未设置则不显示。由于该方法返回基类类型，建议在声明后单独调用（如上），以保留具体子类类型。
 
 ### IntegerConfig
 
@@ -343,7 +348,7 @@ EnumConfig<RenderMode> renderMode = new EnumConfig<>(
 renderMode.set(RenderMode.FAST);
 ```
 
-枚举值数量限制为 2~8 个。
+枚举值数量限制为 2~8 个。下拉菜单（`DROPDOWN`）以可滚动列表展示所有选项，当前生效值会以水蓝色 `✓` 高亮并置灰。
 
 ### HotkeyConfig
 
@@ -439,15 +444,17 @@ public static void openConfig(Screen parent) {
 ### 界面功能
 
 - 标题：使用 `ConfigManager.displayName()`，由各 mod 自己指定。
-- 搜索框：按配置项标识符（`name`）或**翻译后的显示名称**过滤，支持中英文搜索。
-- 分类标题：所有配置项按分类分组显示，分类名使用 `Component.translatable`。
+- 分类页签：多个分类在顶部以页签切换，当前选中的页签置灰高亮；只有一个分类时页签自动隐藏。
+- 搜索框：按配置项标识符（`name`）或**翻译后的显示名称**过滤，支持中英文搜索。搜索为**跨所有分类**的全局搜索，搜索时页签会全部置灰禁用，以表明结果不局限于当前分类。
+- 配置项描述：设置了 `description()` 的配置项，悬停时显示 tooltip 说明。
 - 配置项左侧显示 `Config.displayName()`，支持 `Component.translatable` 翻译。
 - 各类型编辑控件：见 [支持类型](#支持类型)。
 - 每个配置项右侧有 `Reset`（`重置`）按钮恢复默认值；若配置项已等于默认值则按钮禁用。
-- 已修改的配置项显示黄色半透明背景高亮。
+- 已修改的配置项显示天蓝色半透明背景高亮。
 - Boolean 开关按钮：开启显示绿色文字、关闭显示红色文字。
-- 支持 Enum 循环按钮或下拉菜单。
-- 底部左侧为 `Cancel`（`取消`）直接返回，右侧为 `Done`（`完成`）保存并退出；`Done` 只有在配置发生修改时才能点击。
+- 支持 Enum 循环按钮或下拉菜单（下拉为可滚动列表，当前值 `✓` 高亮）。
+- 底部左侧为 `Cancel`（`取消`），右侧为 `Done`（`完成`）保存并退出；`Done` 只有在配置发生修改时才能点击。
+- 取消/ESC 时若有未保存的更改，会弹出二次确认（【放弃更改】/【继续编辑】），避免误丢修改。
 
 ## 加载与保存
 

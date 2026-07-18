@@ -26,6 +26,9 @@ public class ConfigScreen extends Screen {
 	private Button cancelButton;
 	private Button doneButton;
 	private double scrollAmount;
+	private ConfigCategory selectedCategory;
+	private String searchFilter = "";
+	private final java.util.List<Button> tabButtons = new java.util.ArrayList<>();
 
 	public ConfigScreen(Screen lastScreen, @NotNull ConfigManager manager) {
 		super(manager.displayName());
@@ -37,13 +40,41 @@ public class ConfigScreen extends Screen {
 		return this.manager;
 	}
 
+	/**
+	 * The screen to return to when leaving this config screen.
+	 *
+	 * @return The parent screen.
+	 */
+	public Screen lastScreen() {
+		return this.lastScreen;
+	}
+
 	@Override
 	protected void init() {
 		this.searchBox = new EditBox(this.font, this.width / 2 - 100, 22, 200, 20, SEARCH);
-		this.searchBox.setResponder(value -> this.configList.setFilter(value));
+		this.searchBox.setResponder(value -> {
+			this.searchFilter = value;
+			if (this.configList != null) {
+				this.configList.setFilter(value);
+			}
+			this.updateTabStates();
+		});
+		this.searchBox.setValue(this.searchFilter);
 		this.addRenderableWidget(this.searchBox);
 
-		this.configList = new ConfigList(this, this.minecraft, this.width, this.height - 90, 50, 24);
+		java.util.List<ConfigCategory> categories = new java.util.ArrayList<>(this.manager.categories());
+		if (this.selectedCategory == null || !categories.contains(this.selectedCategory)) {
+			this.selectedCategory = categories.isEmpty() ? null : categories.get(0);
+		}
+		boolean showTabs = categories.size() > 1;
+
+		if (showTabs) {
+			this.initTabs(categories);
+		}
+
+		int listY = showTabs ? 74 : 50;
+		this.configList = new ConfigList(this, this.minecraft, this.width, this.height - 40 - listY, listY, 24);
+		this.configList.setFilter(this.searchFilter);
 		this.configList.setScrollAmount(this.scrollAmount);
 		this.addRenderableWidget(this.configList);
 
@@ -65,6 +96,65 @@ public class ConfigScreen extends Screen {
 			}
 		}
 		this.updateDoneButton();
+	}
+
+	private void initTabs(java.util.List<ConfigCategory> categories) {
+		this.tabButtons.clear();
+		int tabY = 48;
+		int gap = 4;
+		int totalWidth = 0;
+		java.util.List<Integer> widths = new java.util.ArrayList<>();
+		for (ConfigCategory category : categories) {
+			int w = Math.max(60, this.font.width(category.displayName()) + 16);
+			widths.add(w);
+			totalWidth += w;
+		}
+		totalWidth += gap * (categories.size() - 1);
+		int x = this.width / 2 - totalWidth / 2;
+		for (int i = 0; i < categories.size(); i++) {
+			ConfigCategory category = categories.get(i);
+			int w = widths.get(i);
+			Button tab = Button.builder(category.displayName(), b -> this.selectCategory(category))
+				.bounds(x, tabY, w, 20)
+				.build();
+			this.tabButtons.add(tab);
+			this.addRenderableWidget(tab);
+			x += w + gap;
+		}
+		this.updateTabStates();
+	}
+
+	/**
+	 * Updates tab button states. The selected tab is highlighted (inactive). While a search
+	 * query is active, all tabs are disabled to make clear the results span every category.
+	 */
+	private void updateTabStates() {
+		boolean searching = !this.searchFilter.isEmpty();
+		java.util.List<ConfigCategory> categories = new java.util.ArrayList<>(this.manager.categories());
+		for (int i = 0; i < this.tabButtons.size(); i++) {
+			Button tab = this.tabButtons.get(i);
+			ConfigCategory category = i < categories.size() ? categories.get(i) : null;
+			tab.active = !searching && category != this.selectedCategory;
+		}
+	}
+
+	private void selectCategory(ConfigCategory category) {
+		if (category == this.selectedCategory) {
+			return;
+		}
+		this.selectedCategory = category;
+		this.searchFilter = "";
+		this.scrollAmount = 0;
+		this.rebuildWidgets();
+	}
+
+	/**
+	 * The currently selected category tab, or null when there are no categories.
+	 *
+	 * @return The selected category.
+	 */
+	public ConfigCategory selectedCategory() {
+		return this.selectedCategory;
 	}
 
 	private void captureInitialValue(Config<?> config) {
@@ -156,9 +246,21 @@ public class ConfigScreen extends Screen {
 	}
 
 	private void onCancel() {
+		if (this.isModifiedFromInitial()) {
+			this.minecraft.gui.setScreen(new ConfirmDiscardScreen(this));
+			return;
+		}
+		this.discardChanges();
+		this.minecraft.gui.setScreen(this.lastScreen);
+	}
+
+	/**
+	 * Discards all pending (unsaved) changes, resetting the screen state.
+	 * The config values themselves are untouched since they are only applied on Done.
+	 */
+	public void discardChanges() {
 		this.pendingValues.clear();
 		this.initialValues.clear();
-		this.minecraft.gui.setScreen(this.lastScreen);
 	}
 
 	public boolean isModifiedFromInitial(Config<?> config) {
