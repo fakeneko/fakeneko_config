@@ -242,16 +242,16 @@ public class ConfigScreen extends Screen {
 		this.pendingValues.clear();
 		this.initialValues.clear();
 		this.manager.save();
-		this.minecraft.gui.setScreen(this.lastScreen);
+		this.minecraft.setScreen(this.lastScreen);
 	}
 
 	private void onCancel() {
 		if (this.isModifiedFromInitial()) {
-			this.minecraft.gui.setScreen(new ConfirmDiscardScreen(this));
+			this.minecraft.setScreen(new ConfirmDiscardScreen(this));
 			return;
 		}
 		this.discardChanges();
-		this.minecraft.gui.setScreen(this.lastScreen);
+		this.minecraft.setScreen(this.lastScreen);
 	}
 
 	/**

@@ -43,9 +43,9 @@ public class ConfirmDiscardScreen extends Screen {
 		int buttonY = this.height / 2 + 10;
 		this.addRenderableWidget(Button.builder(DISCARD, button -> {
 			this.configScreen.discardChanges();
-			this.minecraft.gui.setScreen(this.configScreen.lastScreen());
+			this.minecraft.setScreen(this.configScreen.lastScreen());
 		}).bounds(centerX - buttonWidth - 5, buttonY, buttonWidth, 20).build());
-		this.addRenderableWidget(Button.builder(KEEP_EDITING, button -> this.minecraft.gui.setScreen(this.configScreen))
+		this.addRenderableWidget(Button.builder(KEEP_EDITING, button -> this.minecraft.setScreen(this.configScreen))
 			.bounds(centerX + 5, buttonY, buttonWidth, 20).build());
 	}
 
@@ -53,7 +53,7 @@ public class ConfirmDiscardScreen extends Screen {
 	public void onClose() {
 		// ESC on the confirm screen = discard changes and leave.
 		this.configScreen.discardChanges();
-		this.minecraft.gui.setScreen(this.configScreen.lastScreen());
+		this.minecraft.setScreen(this.configScreen.lastScreen());
 	}
 
 	@Override

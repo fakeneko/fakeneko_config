@@ -44,14 +44,14 @@ public class EnumDropdownScreen<E extends Enum<E>> extends Screen {
 		this.optionList = new EnumOptionList(this.minecraft, this.width, listHeight, headerHeight);
 		this.addRenderableWidget(this.optionList);
 
-		this.addRenderableWidget(Button.builder(CANCEL, button -> this.minecraft.gui.setScreen(this.lastScreen))
+		this.addRenderableWidget(Button.builder(CANCEL, button -> this.minecraft.setScreen(this.lastScreen))
 			.bounds(this.width / 2 - OPTION_WIDTH / 2, this.height - 30, OPTION_WIDTH, OPTION_HEIGHT)
 			.build());
 	}
 
 	@Override
 	public void onClose() {
-		this.minecraft.gui.setScreen(this.lastScreen);
+		this.minecraft.setScreen(this.lastScreen);
 	}
 
 	@Override
@@ -91,7 +91,7 @@ public class EnumDropdownScreen<E extends Enum<E>> extends Screen {
 				}
 				this.button = Button.builder(label, b -> {
 					EnumDropdownScreen.this.onSelect.accept(value);
-					EnumDropdownScreen.this.minecraft.gui.setScreen(EnumDropdownScreen.this.lastScreen);
+					EnumDropdownScreen.this.minecraft.setScreen(EnumDropdownScreen.this.lastScreen);
 				}).bounds(0, 0, OPTION_WIDTH, OPTION_HEIGHT).build();
 				if (current) {
 					this.button.active = false;

@@ -55,7 +55,7 @@ public class HotkeyScreen extends Screen {
 	@Override
 	public boolean keyPressed(net.minecraft.client.input.KeyEvent event) {
 		if (event.key() == InputConstants.KEY_ESCAPE) {
-			this.minecraft.gui.setScreen(this.lastScreen);
+			this.minecraft.setScreen(this.lastScreen);
 			return true;
 		}
 		if (event.key() == InputConstants.KEY_RETURN || event.key() == InputConstants.KEY_NUMPADENTER) {
@@ -135,6 +135,6 @@ public class HotkeyScreen extends Screen {
 	@Override
 	public void onClose() {
 		this.onComplete.accept(new InputKeys(this.recording));
-		this.minecraft.gui.setScreen(this.lastScreen);
+		this.minecraft.setScreen(this.lastScreen);
 	}
 }

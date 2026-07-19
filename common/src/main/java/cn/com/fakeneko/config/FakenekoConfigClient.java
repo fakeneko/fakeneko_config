@@ -20,6 +20,6 @@ public class FakenekoConfigClient {
 	}
 
 	public static void openConfigScreen(@NotNull Screen parent) {
-		Minecraft.getInstance().gui.setScreen(createConfigScreen(parent));
+		Minecraft.getInstance().setScreen(createConfigScreen(parent));
 	}
 }

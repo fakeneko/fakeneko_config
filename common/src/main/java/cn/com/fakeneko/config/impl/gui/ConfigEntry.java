@@ -67,7 +67,7 @@ public class ConfigEntry extends ConfigList.Entry {
 		HotkeyConfig hotkey = booleanConfig.hotkey();
 		if (hotkey != null) {
 			Button hotkeyButton = Button.builder(Component.empty(), b -> {
-				Minecraft.getInstance().gui.setScreen(new HotkeyScreen(this.screen, hotkey, this.screen.getEffectiveValue(hotkey), value -> this.screen.setPendingValue(hotkey, value)));
+				Minecraft.getInstance().setScreen(new HotkeyScreen(this.screen, hotkey, this.screen.getEffectiveValue(hotkey), value -> this.screen.setPendingValue(hotkey, value)));
 			}).bounds(0, 0, 60, 20).build();
 			this.children.add(hotkeyButton);
 			this.refreshers.add(() -> hotkeyButton.setMessage(this.formatHotkey(this.screen.getEffectiveValue(hotkey))));
@@ -200,7 +200,7 @@ public class ConfigEntry extends ConfigList.Entry {
 
 	private void createHotkeyWidget(HotkeyConfig hotkeyConfig) {
 		Button button = Button.builder(Component.empty(), b -> {
-			Minecraft.getInstance().gui.setScreen(new HotkeyScreen(this.screen, hotkeyConfig, this.screen.getEffectiveValue(hotkeyConfig), value -> this.screen.setPendingValue(hotkeyConfig, value)));
+			Minecraft.getInstance().setScreen(new HotkeyScreen(this.screen, hotkeyConfig, this.screen.getEffectiveValue(hotkeyConfig), value -> this.screen.setPendingValue(hotkeyConfig, value)));
 		}).bounds(0, 0, 100, 20).build();
 		this.children.add(button);
 		this.refreshers.add(() -> button.setMessage(this.formatHotkey(this.screen.getEffectiveValue(hotkeyConfig))));
@@ -219,7 +219,7 @@ public class ConfigEntry extends ConfigList.Entry {
 			this.refreshers.add(() -> button.setMessage(enumConfig.displayValue(this.screen.getEffectiveValue(enumConfig))));
 		} else {
 			Button button = Button.builder(Component.empty(), b -> {
-				Minecraft.getInstance().gui.setScreen(new EnumDropdownScreen<>(this.screen, enumConfig, (E selected) -> {
+				Minecraft.getInstance().setScreen(new EnumDropdownScreen<>(this.screen, enumConfig, (E selected) -> {
 					this.screen.setPendingValue(enumConfig, selected);
 				}));
 			}).bounds(0, 0, 100, 20).build();

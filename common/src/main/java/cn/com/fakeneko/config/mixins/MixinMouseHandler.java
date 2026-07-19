@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinMouseHandler {
 	@Inject(method = "onButton", at = @At("HEAD"))
 	private void onMouseButton(long window, MouseButtonInfo rawButtonInfo, int action, CallbackInfo ci) {
-		if (net.minecraft.client.Minecraft.getInstance().gui.screen() != null) {
+		if (net.minecraft.client.Minecraft.getInstance().screen != null) {
 			return;
 		}
 		InputConstants.Key inputKey = InputConstants.Type.MOUSE.getOrCreate(rawButtonInfo.button());
