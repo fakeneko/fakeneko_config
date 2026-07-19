@@ -37,6 +37,11 @@ subprojects {
         mavenCentral()
 
         maven {
+            name = 'TerraformersMC'
+            url = 'https://maven.terraformersmc.com/releases/'
+        }
+
+        maven {
             name = 'Sponge / Mixin'
             url = 'https://repo.spongepowered.org/repository/maven-public/'
         }

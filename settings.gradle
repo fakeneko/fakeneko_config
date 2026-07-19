@@ -16,5 +16,5 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'MultiLoader'
+rootProject.name = 'fakeneko_config'
 include("Common", "Fabric", "Forge")
