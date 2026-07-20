@@ -46,10 +46,11 @@ public class ConfirmDiscardScreen extends Screen {
 	@Override
 	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
 		this.renderBackground(poseStack);
-		drawCenteredString(poseStack, this.font, this.title, this.width / 2, this.height / 2 - 50, 0xFFFFFF);
-		// Center the message text block horizontally
-		int msgWidth = Math.min(this.width - 100, 400);
-		this.font.drawWordWrap(MESSAGE, this.width / 2 - msgWidth / 2, this.height / 2 - 30, msgWidth, 0xAAAAAA);
+		// Title centered, message centered below it
+		drawCenteredString(poseStack, this.font, this.title, this.width / 2, this.height / 2 - 40, 0xFFFFFF);
+		int msgWidth = Math.min(this.width - 100, 300);
+		int msgX = (this.width - msgWidth) / 2;
+		this.font.drawWordWrap(MESSAGE, msgX, this.height / 2 - 20, msgWidth, 0xAAAAAA);
 		super.render(poseStack, mouseX, mouseY, partialTick);
 	}
 }

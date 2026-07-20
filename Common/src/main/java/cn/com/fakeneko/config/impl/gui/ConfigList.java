@@ -87,7 +87,12 @@ public class ConfigList extends ContainerObjectSelectionList<ConfigList.Entry> {
 
 	@Override
 	public int getRowWidth() {
-		return Math.min(this.width - 20, 760);
+		return Math.min(this.width - 20, 560);
+	}
+
+	@Override
+	public int getRowLeft() {
+		return this.x0 + (this.width - this.getRowWidth()) / 2;
 	}
 
 	@Override

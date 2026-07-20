@@ -91,7 +91,6 @@ public class ConfigScreen extends Screen {
 
 		int listY = showTabs ? 74 : 50;
 		this.configList = new ConfigList(this, this.minecraft, contentWidth, this.height, listY, this.height - 40, 24);
-		this.configList.setLeftPos(contentX);
 		this.configList.setFilter(this.searchFilter);
 		this.configList.setScrollAmount(this.scrollAmount);
 		this.addRenderableWidget(this.configList);
