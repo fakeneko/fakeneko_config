@@ -62,8 +62,16 @@ public class ConfigScreen extends Screen {
 				this.configList.setFilter(value);
 			}
 			this.updateTabStates();
+			if (value.isEmpty()) {
+				this.searchBox.setSuggestion(SEARCH.getString());
+			} else {
+				this.searchBox.setSuggestion("");
+			}
 		});
 		this.searchBox.setValue(this.searchFilter);
+		if (this.searchFilter.isEmpty()) {
+			this.searchBox.setSuggestion(SEARCH.getString());
+		}
 		this.addRenderableWidget(this.searchBox);
 
 		java.util.List<ConfigCategory> categories = new java.util.ArrayList<>(this.manager.categories());
