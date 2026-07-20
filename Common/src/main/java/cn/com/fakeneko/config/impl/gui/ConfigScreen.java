@@ -55,7 +55,12 @@ public class ConfigScreen extends Screen {
 		this.clearWidgets();
 		this.tabButtons.clear();
 
-		this.searchBox = new EditBox(this.font, this.width / 2 - 100, 22, 200, 20, SEARCH);
+		// Centered content area: max 560px wide, centered on screen
+		int contentWidth = Math.min(this.width - 40, 560);
+		int contentX = (this.width - contentWidth) / 2;
+		int centerX = this.width / 2;
+
+		this.searchBox = new EditBox(this.font, centerX - 100, 22, 200, 20, SEARCH);
 		this.searchBox.setResponder(value -> {
 			this.searchFilter = value;
 			if (this.configList != null) {
@@ -85,13 +90,14 @@ public class ConfigScreen extends Screen {
 		}
 
 		int listY = showTabs ? 74 : 50;
-		this.configList = new ConfigList(this, this.minecraft, this.width, this.height, listY, this.height - 40, 24);
+		this.configList = new ConfigList(this, this.minecraft, contentWidth, this.height, listY, this.height - 40, 24);
+		this.configList.setLeftPos(contentX);
 		this.configList.setFilter(this.searchFilter);
 		this.configList.setScrollAmount(this.scrollAmount);
 		this.addRenderableWidget(this.configList);
 
-		this.cancelButton = new Button(this.width / 2 - 155, this.height - 30, 150, 20, CANCEL, button -> this.onCancel());
-		this.doneButton = new Button(this.width / 2 + 5, this.height - 30, 150, 20, DONE, button -> this.onDone());
+		this.cancelButton = new Button(centerX - 155, this.height - 30, 150, 20, CANCEL, button -> this.onCancel());
+		this.doneButton = new Button(centerX + 5, this.height - 30, 150, 20, DONE, button -> this.onDone());
 		this.addRenderableWidget(this.cancelButton);
 		this.addRenderableWidget(this.doneButton);
 
@@ -221,7 +227,6 @@ public class ConfigScreen extends Screen {
 	@Override
 	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
 		this.renderBackground(poseStack);
-		// Render search box explicitly before list so it's not covered
 		this.searchBox.render(poseStack, mouseX, mouseY, partialTick);
 		super.render(poseStack, mouseX, mouseY, partialTick);
 		drawCenteredString(poseStack, this.font, this.title, this.width / 2, 8, 0xFFFFFF);

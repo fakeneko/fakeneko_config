@@ -27,12 +27,13 @@ public class ConfirmDiscardScreen extends Screen {
 	protected void init() {
 		int centerX = this.width / 2;
 		int buttonWidth = 120;
-		int buttonY = this.height / 2 + 10;
-		this.addRenderableWidget(new Button(centerX - buttonWidth - 5, buttonY, buttonWidth, 20, DISCARD, button -> {
+		int gap = 10;
+		int buttonY = this.height / 2 + 20;
+		this.addRenderableWidget(new Button(centerX - buttonWidth - gap / 2, buttonY, buttonWidth, 20, DISCARD, button -> {
 			this.configScreen.discardChanges();
 			this.minecraft.setScreen(this.configScreen.lastScreen());
 		}));
-		this.addRenderableWidget(new Button(centerX + 5, buttonY, buttonWidth, 20, KEEP_EDITING, button -> this.minecraft.setScreen(this.configScreen)));
+		this.addRenderableWidget(new Button(centerX + gap / 2, buttonY, buttonWidth, 20, KEEP_EDITING, button -> this.minecraft.setScreen(this.configScreen)));
 	}
 
 	@Override
@@ -45,8 +46,10 @@ public class ConfirmDiscardScreen extends Screen {
 	@Override
 	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
 		this.renderBackground(poseStack);
-		drawCenteredString(poseStack, this.font, this.title, this.width / 2, this.height / 2 - 40, 0xFFFFFF);
-		this.font.drawWordWrap(MESSAGE, this.width / 2 - (this.width - 50) / 2, this.height / 2 - 25, this.width - 50, 0xAAAAAA);
+		drawCenteredString(poseStack, this.font, this.title, this.width / 2, this.height / 2 - 50, 0xFFFFFF);
+		// Center the message text block horizontally
+		int msgWidth = Math.min(this.width - 100, 400);
+		this.font.drawWordWrap(MESSAGE, this.width / 2 - msgWidth / 2, this.height / 2 - 30, msgWidth, 0xAAAAAA);
 		super.render(poseStack, mouseX, mouseY, partialTick);
 	}
 }
