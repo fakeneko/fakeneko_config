@@ -24,8 +24,8 @@ jobs:
       - name: Collect release artifacts
         run: |
           mkdir -p release
-          cp Fabric/build/libs/*fabric*[0-9].jar release/ 2>/dev/null || true
-          cp Forge/build/libs/*forge*[0-9].jar release/ 2>/dev/null || true
+          cp Fabric/build/libs/${mod_id}-fabric-*.jar release/ 2>/dev/null || true
+          cp Forge/build/libs/${mod_id}-forge-*.jar release/ 2>/dev/null || true
       - uses: softprops/action-gh-release@v2
         with:
           files: release/*.jar
